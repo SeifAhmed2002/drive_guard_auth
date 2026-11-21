@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../core/theme.dart';
 import '../services/auth_service.dart';
 import '../widgets/primary_button.dart';
-import 'home_placeholder.dart';
+import 'permissions_screen.dart';
 
 /// NOTE: the Figma file has no verification screen, so this one follows the
 /// same design system (6-digit code). Demo code with the mock service: 123456.
@@ -67,7 +67,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
       await authService.verifyCode(phone: widget.phone, code: _code.text);
       if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const HomePlaceholderScreen()),
+        MaterialPageRoute(builder: (_) => const PermissionsScreen()),
         (_) => false,
       );
     } on AuthException catch (e) {

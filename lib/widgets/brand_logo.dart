@@ -1,75 +1,79 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 import '../core/theme.dart';
 
-/// Eye-guard mark. This is a code-drawn approximation of the Figma logo -
-/// for the exact artwork export "Logo/Mark Eye Guard" as SVG from Figma and
-/// render it with flutter_svg instead.
 class EyeMark extends StatelessWidget {
   final double width;
   final double height;
-  final bool tile;
-  const EyeMark({super.key, this.width = 40, this.height = 40, this.tile = true});
+  const EyeMark({super.key, this.width = 34, this.height = 22});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Image.asset(
+      'assets/images/eye_mark.png',
       width: width,
       height: height,
-      child: CustomPaint(painter: _EyeMarkPainter(tile: tile)),
+      fit: BoxFit.contain,
     );
   }
 }
 
 class _EyeMarkPainter extends CustomPainter {
-  final bool tile;
-  _EyeMarkPainter({required this.tile});
-
   @override
   void paint(Canvas canvas, Size s) {
-    if (tile) {
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(Offset.zero & s, Radius.circular(s.width * 0.23)),
-        Paint()..color = AppColors.canvas,
-      );
-    }
-    final inset = tile ? s.width * 0.0625 : 0.0;
-    final w = s.width - inset * 2, h = s.height - inset * 2;
-    canvas.save();
-    canvas.translate(inset, inset);
+    final w = s.width, h = s.height;
+    final thick = w * 0.075;
 
-    final stroke = Paint()
+    final eye = Path()
+      ..moveTo(w * .02, h * .5)
+      ..quadraticBezierTo(w * .5, -h * .32, w * .98, h * .5)
+      ..quadraticBezierTo(w * .5, h * 1.32, w * .02, h * .5)
+      ..close();
+
+    canvas.save();
+    canvas.clipPath(eye);
+
+    final thin = Paint()
       ..color = AppColors.textPrimary
       ..style = PaintingStyle.stroke
-      ..strokeWidth = w * 0.07
+      ..strokeWidth = w * 0.03
+      ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
-    final eye = Path()
-      ..moveTo(w * .04, h * .5)
-      ..quadraticBezierTo(w * .5, -h * .1, w * .96, h * .5)
-      ..quadraticBezierTo(w * .5, h * 1.1, w * .04, h * .5)
-      ..close();
-    canvas.drawPath(eye, stroke);
 
-    final white = Paint()..color = AppColors.textPrimary;
-    // head + shoulders
-    canvas.drawOval(Rect.fromCenter(center: Offset(w * .5, h * .44), width: w * .26, height: h * .42), white);
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(Rect.fromCenter(center: Offset(w * .5, h * .8), width: w * .42, height: h * .22), Radius.circular(w * .05)),
-      white,
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset(w * .5, h * .46), width: w * .26, height: h * .74),
+      thin,
     );
-    // glasses / lens
+    final shoulders = Path()
+      ..moveTo(w * .30, h * 1.05)
+      ..quadraticBezierTo(w * .32, h * .78, w * .44, h * .76)
+      ..moveTo(w * .70, h * 1.05)
+      ..quadraticBezierTo(w * .68, h * .78, w * .56, h * .76);
+    canvas.drawPath(shoulders, thin);
+
     canvas.drawRRect(
-      RRect.fromRectAndRadius(Rect.fromCenter(center: Offset(w * .5, h * .38), width: w * .3, height: h * .09), const Radius.circular(2)),
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(center: Offset(w * .5, h * .40), width: w * .27, height: h * .15),
+        Radius.circular(w * .02),
+      ),
       Paint()..color = AppColors.cyan,
     );
     canvas.restore();
+
+    canvas.drawPath(
+      eye,
+      Paint()
+        ..color = AppColors.textPrimary
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = thick
+        ..strokeJoin = StrokeJoin.round,
+    );
   }
 
   @override
-  bool shouldRepaint(covariant _EyeMarkPainter old) => old.tile != tile;
+  bool shouldRepaint(covariant CustomPainter old) => false;
 }
 
-/// Mark + DRIVE / GUARD wordmark.
 class BrandLogo extends StatelessWidget {
   const BrandLogo({super.key});
 
@@ -79,7 +83,7 @@ class BrandLogo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const EyeMark(),
-        const SizedBox(width: 10),
+        const SizedBox(width: 14),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

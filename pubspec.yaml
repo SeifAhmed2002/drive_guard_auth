@@ -19,3 +19,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/road_bg.png
+    - assets/images/eye_hero.png
+    - assets/images/eye_mark.png
